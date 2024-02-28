@@ -22,9 +22,8 @@ go run main.go
 - Access application with postman or something else
 ```bash
 localhost:6666/translator
-```
-- JSON FORMAT
-```bash
+
+Format JSON
 {
   "text": "..some text..",
   "target_language": "en",
