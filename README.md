@@ -21,12 +21,15 @@ go run main.go
 ```
 - Access application with postman or something else
 ```bash
+URL request path:
 localhost:6666/translator
 
-Format JSON
+Format JSON request:
 {
   "text": "..some text..",
   "target_language": "en",
   "source_language": "id"
 }
 ```
+# NOTE
+Im using ```go version go1.21.5```
