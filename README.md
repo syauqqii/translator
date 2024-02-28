@@ -31,6 +31,6 @@ Format JSON request:
   "source_language": "id"
 }
 ```
-- language code list [click here](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)
+- list language code [click here](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)
 # NOTE
 Im using ```go version go1.21.5```
