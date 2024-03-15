@@ -7,6 +7,10 @@ git clone https://github.com/syauqqii/translator
 ```bash
 cd translator
 ```
+- Rename env file
+```bash
+mv .env.example .env
+```
 - Inititalization folder name
 ```go
 go mod init translator
