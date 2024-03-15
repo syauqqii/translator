@@ -1,10 +1,14 @@
 package helper
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
+	"github.com/joho/godotenv"
 	"golang.org/x/time/rate"
 )
 
@@ -17,8 +21,21 @@ type UserData struct {
 var (
 	userDataMap = make(map[string]*UserData)
 	mu          sync.Mutex
-	limit       = 30
+	limit       int
 )
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
+	limit, err = strconv.Atoi(os.Getenv("RATE_LIMIT"))
+	if err != nil {
+		fmt.Print(err.Error())
+		limit = 0
+	}
+}
 
 func RateLimitedHandler(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -29,12 +46,12 @@ func RateLimitedHandler(next http.HandlerFunc) http.HandlerFunc {
 		mu.Lock()
 		defer mu.Unlock()
 
-		if time.Since(userData.LastReset) >= time.Minute {
+		if limit != 0 && time.Since(userData.LastReset) >= time.Minute {
 			userData.LastReset = time.Now()
 			userData.Requests = 0
 		}
 
-		if userData.Requests < limit {
+		if limit == 0 || userData.Requests < limit {
 			userData.Requests++
 			next(w, r)
 		} else {
@@ -49,7 +66,12 @@ func getUserData(username string) *UserData {
 
 	userData, ok := userDataMap[username]
 	if !ok {
-		limiter := rate.NewLimiter(rate.Every(time.Minute/time.Duration(limit)), limit)
+		var limiter *rate.Limiter
+		if limit != 0 {
+			limiter = rate.NewLimiter(rate.Every(time.Minute/time.Duration(limit)), limit)
+		} else {
+			limiter = rate.NewLimiter(rate.Inf, 0)
+		}
 		userData = &UserData{
 			Limiter:   limiter,
 			LastReset: time.Now(),
