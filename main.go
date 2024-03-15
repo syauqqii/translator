@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,14 +14,18 @@ func main() {
 	config.LoadConfig()
 	route.SetupRoutes()
 
-	port := 6666
-	fmt.Printf("Server is running at http://localhost:%d\n", port)
+	fmt.Printf("\n $ INFO: Server is running at http://%s:%s\n", config.SERVER_APP, config.PORT_APP)
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
 
+	go func() {
+		if err := http.ListenAndServe(fmt.Sprintf(":%s", config.PORT_APP), nil); err != nil {
+			fmt.Printf(" ! ERROR: Error starting server: %s\n", err.Error())
+		}
+	}()
+
 	<-sigCh
 
-	fmt.Println("\nReceived Ctrl+C signal. Shutting down server...")
 	os.Exit(0)
 }
