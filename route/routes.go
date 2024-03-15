@@ -3,9 +3,9 @@ package route
 import (
 	"net/http"
 	"translator/controller"
+	"translator/helper"
 )
 
-// SetupRoutes => menetapkan rute HTTP
 func SetupRoutes() {
-	http.HandleFunc("/translate", controller.TranslateHandler)
+	http.HandleFunc("/translate", helper.RateLimitedHandler(controller.TranslateHandler))
 }
