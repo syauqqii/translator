@@ -22,7 +22,9 @@ go run main.go
 - Access application with postman or something else
 ```bash
 URL request path:
-localhost:6666/translator
+{SERVER_APP}:{PORT_APP}/translator
+
+*You can change SERVER_APP & PORT_APP at .env file
 
 Format JSON request:
 {
